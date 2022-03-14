@@ -7,7 +7,7 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   </head>
   <body>
@@ -57,10 +57,10 @@
 
     // Jquery Register Delete Buttons
     function registerEventListeners() {
-        $(".delete").on("click", function() {
-            let todoID = $(this).parent().attr('data-id');
-            deleteTodo(todoID);
-        });
+      $(".delete").on("click", function () {
+        let todoID = $(this).parent().attr("data-id");
+        deleteTodo(todoID);
+      });
     }
 
     function storeTodoLocal(todoTitle) {
@@ -89,7 +89,7 @@
 
     // Delete Functionality
     function deleteTodo(todoID) {
-        $("li[data-id="+todoID+"]").remove();
+      $("li[data-id=" + todoID + "]").slideUp();
       let json_temp = JSON.parse(localStorage.getItem("json_data"));
       delete json_temp[todoID];
       localStorage.setItem("json_data", JSON.stringify(json_temp));
@@ -101,10 +101,17 @@
         todoTitle = document.getElementById("todoTitle").value;
         todoId = storeTodoLocal(todoTitle);
       }
-
-      var todoHTML = '<li data-id="' + todoID + '">' + todoTitle + '<a href="#" class="btn btn-sm btn-danger m-1 delete">Delete</a></li>';
-      $("#todo-list").append(todoHTML);
-      registerEventListeners();
+      if (todoTitle) {
+        var todoHTML =
+          '<li style="display:none" data-id="' +
+          todoID +
+          '">' +
+          todoTitle +
+          '<a href="#" class="btn btn-sm btn-danger m-1 delete">Delete</a></li>';
+        $("#todo-list").append(todoHTML);
+        $("li[data-id=" + todoID + "]").fadeIn();
+        registerEventListeners();
+      }
     }
 
     function deleteAllTodos() {
