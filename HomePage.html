@@ -1,69 +1,138 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>JavaScript Tutorial - Working with JSON</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    </head>
-    <body>
-        <div class="container">
-            <h1>JavaScript ToDo App</h1>
-            <div class="row mt-4">
-                <div class="col-8">
-                    <ul id="todo-list"/>
-                </div>
-                <div class="col-4">
-                    <form>
-                        <input type="text" class="form-control" id="todoTitle" placeholder="Todo title..."/>
-                        <button onclick="newTodo()" class="addbtn btn btn-sm btn-primary form-control mt-3">Add</button>
-                    </form>
-                </div>
-            </div>
+  <head>
+    <meta charset="utf-8" />
+    <title>JavaScript Tutorial - Working with JSON</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>JavaScript ToDo App</h1>
+      <div class="row mt-4">
+        <div class="col-8">
+          <ul id="todo-list" />
         </div>
-    </body>
-    <script>
+        <div class="col-4">
+          <form>
+            <input
+              type="text"
+              class="form-control"
+              id="todoTitle"
+              placeholder="Todo title..."
+            />
+            <button
+              onclick="newTodo()"
+              class="addbtn btn btn-sm btn-primary form-control mt-3"
+            >
+              Add
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let json_data = JSON.parse(localStorage.getItem('json_data'));  
     let myList = document.getElementById("todo-list");
+
+    if(json_data) {
+        json_data.forEach(element => {
+            if(element) {
+                newTodo(element.title, element.id);
+            }
+        });
+    }
+
     registerEventListeners();
 
     //Create List Item functionality
-    function createListItem(input) {
-        let listItem = document.createElement("li");
-        listItem.appendChild(
-            document.createTextNode(input)
-        );
+    // function createListItem(todoTitle, todoID) {
+    //     if(!todoTitle && !todoID) {
+    //         todoTitle = document.getElementById("todoTitle").value;
+    //         todoId = storeTodoLocal(todoTitle);
+    //     }
+    //   let listItem = document.createElement("li");
+    //   listItem.appendChild(document.createTextNode(todoTitle));
 
-        let deleteLink = document.createElement("a");
-        deleteLink.href = "#";
-        deleteLink.className = "btn btn-sm btn-danger m-1 delete";
-        deleteLink.appendChild(
-            document.createTextNode("Delete")
-        );
+    //   let deleteLink = document.createElement("a");
+    //   deleteLink.href = "#";
+    //   deleteLink.className = "btn btn-sm btn-danger m-1 delete";
+    //   deleteLink.appendChild(document.createTextNode("Delete"));
 
-        listItem.appendChild(deleteLink);
-        myList.appendChild(listItem);
-        registerEventListeners();
-        console.log("New todo list item was added: " + listItem.firstChild.textContent);
+    //   listItem.appendChild(deleteLink);
+    //   myList.appendChild(listItem);
+    //   registerEventListeners();
+    //   console.log(
+    //     "New todo list item was added: " + listItem.firstChild.textContent
+    //   );
+    // }
+
+    function storeTodoLocal(todoTitle){
+        // retrieve and parse existing JSON from localstorage
+        let json_temp = JSON.parse(localStorage.getItem('json_data'));
+        if(!json_temp) {
+            json_temp = [];
+        }
+
+        let todoID = json_temp.length;
+
+        // add new todo object to JSON
+        json_temp.push({
+            "id": todoID,
+            "title": todoTitle,
+            "completed": false
+        });
+        
+        //log
+        console.log(json_temp);
+        // stringify update JSON and store back in local storage
+        localStorage.setItem('json_data', JSON.stringify(json_temp));
+
+        return todoID;
     }
 
     // Register Delete Buttons
     function registerEventListeners() {
-        let closeButtons = document.getElementsByClassName("delete");
+      let closeButtons = document.getElementsByClassName("delete");
 
-        Array.from(closeButtons).forEach(button => {
-            button.addEventListener('click', deleteTodo, false);
-        });
+      Array.from(closeButtons).forEach((button) => {
+        button.addEventListener("click", deleteTodo, false);
+      });
     }
-    
+
     // Delete Functionality
     function deleteTodo() {
-        let li = this.parentElement;
-        myList.removeChild(li);
+      let li = this.parentElement;
+      myList.removeChild(li);
+      let json_temp = JSON.parse(localStorage.getItem('json_data'));
+      delete json_temp[li.dataset.id];
+      localStorage.setItem('json_data', JSON.stringify(json_temp));
     }
 
     // Add Functionality
-    function newTodo() {
-        let input = document.getElementById("todoTitle").value;
-        createListItem(input);
+    function newTodo(todoTitle, todoID) {
+        if(!todoTitle && !todoID) {
+            todoTitle = document.getElementById("todoTitle").value;
+            todoId = storeTodoLocal(todoTitle);
+        }
+      let listItem = document.createElement("li");
+      listItem.dataset.id = todoID;
+      listItem.appendChild(document.createTextNode(todoTitle));
+
+      let deleteLink = document.createElement("a");
+      deleteLink.href = "#";
+      deleteLink.className = "btn btn-sm btn-danger m-1 delete";
+      deleteLink.appendChild(document.createTextNode("Delete"));
+
+      listItem.appendChild(deleteLink);
+      myList.appendChild(listItem);
+      registerEventListeners();
+      console.log(
+        "New todo list item was added: " + listItem.firstChild.textContent
+      );
     }
-    </script>
+  </script>
 </html>
