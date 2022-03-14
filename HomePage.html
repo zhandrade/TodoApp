@@ -42,6 +42,7 @@
         listItem.appendChild(deleteLink);
         myList.appendChild(listItem);
         registerEventListeners();
+        console.log("New todo list item was added: " + listItem.firstChild.textContent);
     }
 
     // Register Delete Buttons
