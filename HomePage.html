@@ -30,68 +30,52 @@
               Add
             </button>
           </form>
+          <button
+            onclick="deleteAllTodos()"
+            class="addBtn btn btn-sm btn-danger form-control mt-5"
+          >
+            Delete All
+          </button>
         </div>
       </div>
     </div>
   </body>
   <script>
-    let json_data = JSON.parse(localStorage.getItem('json_data'));  
+    let json_data = JSON.parse(localStorage.getItem("json_data"));
     let myList = document.getElementById("todo-list");
 
-    if(json_data) {
-        json_data.forEach(element => {
-            if(element) {
-                newTodo(element.title, element.id);
-            }
-        });
+    if (json_data) {
+      json_data.forEach((element) => {
+        if (element) {
+          newTodo(element.title, element.id);
+        }
+      });
     }
 
     registerEventListeners();
 
-    //Create List Item functionality
-    // function createListItem(todoTitle, todoID) {
-    //     if(!todoTitle && !todoID) {
-    //         todoTitle = document.getElementById("todoTitle").value;
-    //         todoId = storeTodoLocal(todoTitle);
-    //     }
-    //   let listItem = document.createElement("li");
-    //   listItem.appendChild(document.createTextNode(todoTitle));
+    function storeTodoLocal(todoTitle) {
+      // retrieve and parse existing JSON from localstorage
+      let json_temp = JSON.parse(localStorage.getItem("json_data"));
+      if (!json_temp) {
+        json_temp = [];
+      }
 
-    //   let deleteLink = document.createElement("a");
-    //   deleteLink.href = "#";
-    //   deleteLink.className = "btn btn-sm btn-danger m-1 delete";
-    //   deleteLink.appendChild(document.createTextNode("Delete"));
+      let todoID = json_temp.length;
 
-    //   listItem.appendChild(deleteLink);
-    //   myList.appendChild(listItem);
-    //   registerEventListeners();
-    //   console.log(
-    //     "New todo list item was added: " + listItem.firstChild.textContent
-    //   );
-    // }
+      // add new todo object to JSON
+      json_temp.push({
+        id: todoID,
+        title: todoTitle,
+        completed: false,
+      });
 
-    function storeTodoLocal(todoTitle){
-        // retrieve and parse existing JSON from localstorage
-        let json_temp = JSON.parse(localStorage.getItem('json_data'));
-        if(!json_temp) {
-            json_temp = [];
-        }
+      //log
+      console.log(json_temp);
+      // stringify update JSON and store back in local storage
+      localStorage.setItem("json_data", JSON.stringify(json_temp));
 
-        let todoID = json_temp.length;
-
-        // add new todo object to JSON
-        json_temp.push({
-            "id": todoID,
-            "title": todoTitle,
-            "completed": false
-        });
-        
-        //log
-        console.log(json_temp);
-        // stringify update JSON and store back in local storage
-        localStorage.setItem('json_data', JSON.stringify(json_temp));
-
-        return todoID;
+      return todoID;
     }
 
     // Register Delete Buttons
@@ -107,17 +91,17 @@
     function deleteTodo() {
       let li = this.parentElement;
       myList.removeChild(li);
-      let json_temp = JSON.parse(localStorage.getItem('json_data'));
+      let json_temp = JSON.parse(localStorage.getItem("json_data"));
       delete json_temp[li.dataset.id];
-      localStorage.setItem('json_data', JSON.stringify(json_temp));
+      localStorage.setItem("json_data", JSON.stringify(json_temp));
     }
 
     // Add Functionality
     function newTodo(todoTitle, todoID) {
-        if(!todoTitle && !todoID) {
-            todoTitle = document.getElementById("todoTitle").value;
-            todoId = storeTodoLocal(todoTitle);
-        }
+      if (!todoTitle && !todoID) {
+        todoTitle = document.getElementById("todoTitle").value;
+        todoId = storeTodoLocal(todoTitle);
+      }
       let listItem = document.createElement("li");
       listItem.dataset.id = todoID;
       listItem.appendChild(document.createTextNode(todoTitle));
@@ -133,6 +117,13 @@
       console.log(
         "New todo list item was added: " + listItem.firstChild.textContent
       );
+    }
+
+    function deleteAllTodos() {
+      if (confirm("Are you sure you want to delete all the todo items?")) {
+        myList.innerHTML = "";
+        localStorage.removeItem("json_data");
+      }
     }
   </script>
 </html>
