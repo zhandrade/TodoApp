@@ -13,53 +13,23 @@
                     <ul id="todo-list"/>
                 </div>
                 <div class="col-4">
-                    [Add new]
+                    <form>
+                        <input type="text" class="form-control" id="todoTitle" placeholder="Todo title..."/>
+                        <button onclick="newTodo()" class="addbtn btn btn-sm btn-primary form-control mt-3">Add</button>
+                    </form>
                 </div>
             </div>
         </div>
     </body>
     <script>
-        //Mock Data
-    const json_data = [
-      {
-        "userId": 1,
-        "id": 1,
-        "title": "delectus aut autem",
-        "completed": false
-      },
-      {
-        "userId": 1,
-        "id": 2,
-        "title": "quis ut nam facilis et officia qui",
-        "completed": false
-      },
-      {
-        "userId": 1,
-        "id": 3,
-        "title": "fugiat veniam minus",
-        "completed": false
-      },
-      {
-        "userId": 1,
-        "id": 4,
-        "title": "et porro tempora",
-        "completed": true
-      },
-      {
-        "userId": 1,
-        "id": 5,
-        "title": "laboriosam mollitia et enim quasi adipisci quia provident illum",
-        "completed": false
-      }
-    ];
-
-    // Populate Functionality
     let myList = document.getElementById("todo-list");
+    registerEventListeners();
 
-    json_data.forEach(element => {
+    //Create List Item functionality
+    function createListItem(input) {
         let listItem = document.createElement("li");
         listItem.appendChild(
-            document.createTextNode(element.title)
+            document.createTextNode(input)
         );
 
         let deleteLink = document.createElement("a");
@@ -71,18 +41,28 @@
 
         listItem.appendChild(deleteLink);
         myList.appendChild(listItem);
-    });
+        registerEventListeners();
+    }
 
+    // Register Delete Buttons
+    function registerEventListeners() {
+        let closeButtons = document.getElementsByClassName("delete");
+
+        Array.from(closeButtons).forEach(button => {
+            button.addEventListener('click', deleteTodo, false);
+        });
+    }
+    
     // Delete Functionality
-    let closeButtons = document.getElementsByClassName("delete");
-
-    Array.from(closeButtons).forEach(button => {
-        button.addEventListener('click', deleteTodo, false);
-    });
-
     function deleteTodo() {
         let li = this.parentElement;
         myList.removeChild(li);
+    }
+
+    // Add Functionality
+    function newTodo() {
+        let input = document.getElementById("todoTitle").value;
+        createListItem(input);
     }
     </script>
 </html>
