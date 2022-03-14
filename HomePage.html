@@ -8,6 +8,7 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   </head>
   <body>
     <div class="container">
@@ -43,7 +44,6 @@
   </body>
   <script>
     let json_data = JSON.parse(localStorage.getItem("json_data"));
-    let myList = document.getElementById("todo-list");
 
     if (json_data) {
       json_data.forEach((element) => {
@@ -54,6 +54,14 @@
     }
 
     registerEventListeners();
+
+    // Jquery Register Delete Buttons
+    function registerEventListeners() {
+        $(".delete").on("click", function() {
+            let todoID = $(this).parent().attr('data-id');
+            deleteTodo(todoID);
+        });
+    }
 
     function storeTodoLocal(todoTitle) {
       // retrieve and parse existing JSON from localstorage
@@ -79,21 +87,11 @@
       return todoID;
     }
 
-    // Register Delete Buttons
-    function registerEventListeners() {
-      let closeButtons = document.getElementsByClassName("delete");
-
-      Array.from(closeButtons).forEach((button) => {
-        button.addEventListener("click", deleteTodo, false);
-      });
-    }
-
     // Delete Functionality
-    function deleteTodo() {
-      let li = this.parentElement;
-      myList.removeChild(li);
+    function deleteTodo(todoID) {
+        $("li[data-id="+todoID+"]").remove();
       let json_temp = JSON.parse(localStorage.getItem("json_data"));
-      delete json_temp[li.dataset.id];
+      delete json_temp[todoID];
       localStorage.setItem("json_data", JSON.stringify(json_temp));
     }
 
@@ -103,27 +101,16 @@
         todoTitle = document.getElementById("todoTitle").value;
         todoId = storeTodoLocal(todoTitle);
       }
-      let listItem = document.createElement("li");
-      listItem.dataset.id = todoID;
-      listItem.appendChild(document.createTextNode(todoTitle));
 
-      let deleteLink = document.createElement("a");
-      deleteLink.href = "#";
-      deleteLink.className = "btn btn-sm btn-danger m-1 delete";
-      deleteLink.appendChild(document.createTextNode("Delete"));
-
-      listItem.appendChild(deleteLink);
-      myList.appendChild(listItem);
+      var todoHTML = '<li data-id="' + todoID + '">' + todoTitle + '<a href="#" class="btn btn-sm btn-danger m-1 delete">Delete</a></li>';
+      $("#todo-list").append(todoHTML);
       registerEventListeners();
-      console.log(
-        "New todo list item was added: " + listItem.firstChild.textContent
-      );
     }
 
     function deleteAllTodos() {
       if (confirm("Are you sure you want to delete all the todo items?")) {
-        myList.innerHTML = "";
         localStorage.removeItem("json_data");
+        $("#todo-list").empty();
       }
     }
   </script>
